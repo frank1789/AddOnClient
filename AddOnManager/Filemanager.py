@@ -1,30 +1,31 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
-import platform
-import os
-import sys
 
-import time
+import os
+import re
 import zipfile
 import shutil
 from tqdm import tqdm
 from send2trash import send2trash
+from notifyme import notify
 
 
 class Filemanager:
     __tempname = 'TempFolderAddon'
     __zipfile = ''
+    # initialize list of file to copy
+    __path = []
 
     def __init__(self, inputfile):
+        # load the file
         self.__zipfile = inputfile
+        self.maketempfolder()
 
     def maketempfolder(self):
         # load the zip file in read mode
         archive = zipfile.ZipFile(self.__zipfile, 'r')
-
         # prints the content
-        print(archive.printdir())
-
+        # print(archive.printdir())  # enable for debug
         # make a temporary directory
         try:
             os.makedirs('TempFolderAddon')
@@ -44,117 +45,110 @@ class Filemanager:
             send2trash(self.__tempname)
             print('Delete temporary files\n')
 
-    def copytree(src, dst, symlinks=False):
-        names = os.listdir(src)
-        os.makedirs(dst)
-        errors = []
-        for name in names:
-            srcname = os.path.join(src, name)
-            dstname = os.path.join(dst, name)
+    def __deletezipfile(self):
+        if os.path.exists(self.__zipfile):
+            #  move to trash
+            send2trash(self.__zipfile)
+            print('Delete zip files\n')
 
-    def coopy(self,
-              src='/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/AddOnManager/TempFolderAddon/',
-              dst='/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2/', symlinks=False):
+    def upgrade(self):
+        # search file in target folder
+        for root, dirs, files in os.walk("."):
+            for file in files:
+                # make string of path
+                tmp = root + '/' + file
+                if '/TempFolderAddon/' in tmp:
+                    # print(tmp) # enable for debug
+                    self.__path.append(root + '/' + file)
+                else:
+                    pass
 
-        names = os.listdir(src)
-        print(names)
-        # os.makedirs(dst)
-        errors = []
-        srcname = []
-        for name in names:
-            srcname = os.path.join(src, name)
-            print(srcname, end='\n')
-            dstname = os.path.join(dst, name)
-            # print(dstname, end='\n')
+        # launch copy of file
+        notify(title='ElvUI Add-On Manager', subtitle='with python', message='Start copy of files...')
+        with tqdm(range(len(self.__path)), desc='start') as pbar:
+            for i in range(len(self.__path)):
+                pbar.set_description('copy file {:<35}'.format(self.__extractnameextfile(self.__path[i])))
+                # todo insert function of copy
+                pbar.update()
+                pass
 
-            # print(type(bar))
-            # self.copyDirectoryTree(bar, dstname)
-            bar = tqdm()
-
-
-
-            # def copy(source, destination, filetype):
-            #     source = source + '\\' + filetype
-            #     destination = destination + '\\' + filetype
-            #     bar = tqdm(os.listdir(source))
-            #     for directory in bar:
-            #         try: shutil.copytree(source + '\\' + directory, destination + '\\' + directory + ' Copied')
-            #         print except: continue
-            #
-            # for folder in name:
-            #   print(folder)
-            # bar = tqdm(folder)
-            # for x in bar:
-            #    print(x)
-            # self.copyDirectoryTree(bar, dstname)
-
-    def copyDirectoryTree(self, root_src_dir, root_dst_dir):
-        """
-        Copy directory tree. Overwrites also read only files.
-        :param root_src_dir: source directory
-        :param root_dst_dir:  destination directory
-        """
-
-        for src_dir, dirs, files in os.walk(root_src_dir):
-            dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
-            if not os.path.exists(dst_dir):
-                os.makedirs(dst_dir)
-
-        for file_ in files:
-            src_file = os.path.join(src_dir, file_)
-            dst_file = os.path.join(dst_dir, file_)
-            if os.path.exists(dst_file):
-                try:
-                    os.remove(dst_file)
-                except PermissionError as exc:
-                    os.chmod(dst_file, stat.S_IWUSR)
-                    os.remove(dst_file)
-
-            shutil.copy(src_file, dst_dir)
-
-
-# src = '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/tmp'
-# dst = '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2'
-# def copy():
-#     #shutil.copytree(src, dst)
-#     if os.path.exists(dst):
-#         print('Folder exist, then all file overwrite\n\tPorced: yes or no?')
-#         shutil.rmtree(dst)
-#     shutil.copytree(src, dst)
-#
-#
-#
-#
-# def process_content_with_progress3(inputpath = src, blocksize=1024):
-#     # Preprocess the total files sizes
-#     sizecounter = 0
-#     for filepath in tqdm(os.listdir(inputpath), unit="files"):
-#         print(os.walk(inputpath))
-#         sizecounter += os.stat(filepath).st_size
-#
-#     # Load tqdm with size counter instead of file counter
-#     with tqdm(total=sizecounter,
-#               unit='B', unit_scale=True, unit_divisor=1024) as pbar:
-#         for filepath in walkdir(inputpath):
-#             with open(filepath, 'rb') as fh:
-#                 buf = 1
-#                 while (buf):
-#                     buf = fh.read(blocksize)
-#                     dosomething(buf)
-#                     if buf:
-#                         pbar.set_postfix(file=filepath[-10:], refresh=False)
-#                         pbar.update(len(buf))
+    def __extractnameextfile(self, filepath):
+        searched = re.search(r"(.+\/)(?P<fieldnames>[^\/]+)$", filepath)
+        file_name_ext = searched.group('fieldnames')
+        # print(searched.group('namewithext')) # enable for debug
+        return file_name_ext
 
 
 if __name__ == '__main__':
     outzip = '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/elvui-10.68.zip'
+    src = '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/AddOnManager/TempFolderAddon/'
+    dst = '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2/'
+
+    test = Filemanager(outzip)
+    test.upgrade()
+
+    # try:
+    #     shutil.copytree(src, dst)
+    #     # Directories are the same
+    # except shutil.Error as e:
+    #     print('Directory not copied. Error: %s' % e)
+    #     # Any error saying that the directory doesn't exist
+    # except OSError as e:
+    #     print('Directory not copied. Error: %s' % e)
+    # #finally:
+    #  #
+    #   #  print('Over')
+    #
+    # for item in os.listdir(src):
+    #     print(item)
+    #
+    #
+    # for item in os.listdir(src):
+    #     srcFile = os.path.join(src, item)
+    #     dstFile = os.path.join(dst, item)
+    #     print(srcFile)
+    #     shutil.copy2(srcFile, dstFile)
+
+
+
 
     # process_content_with_progress3()
 
-    test = Filemanager(outzip)
-    test.maketempfolder()
-    # test.coopy()
+    # test = Filemanager(outzip)
+    # test.maketempfolder()
+    # test.test(src, dst)
 
+
+    # shutil.copy2(pa[i], '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2/ElvUI/')
+    # print((len(path) - 1) * '---', os.path.basename(root))
+    # print(root)
+    # pa.append(root)
+
+
+
+
+
+
+    # for file in files:
+    # print(len(path) * '---', file)
+    #    print(file)
+    # a = os.listdir(src)
+    # print(os.walk('.'))
+    # print(os.listdir(src))
+    # print(type(a))
+
+    # bar = tqdm(files)
+    # print(bar)
+    # for file in root:
+    #    print(file)
+    #    shutil.copytree(file,'/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2')
+    # print(pa)
+    # for i in pa:
+    #     os.listdir(i)
+    # bar = tqdm(dirs)
+    # for directory in bar:
+    # print(directory)
+    #    shutil.copyfile(directory, dst)
     #
     # def copy(source, destination, filetype):
     #     source = source + '\\' + filetype
@@ -163,6 +157,3 @@ if __name__ == '__main__':
     #     for directory in bar:
     #         try: shutil.copytree(source + '\\' + directory, destination + '\\' + directory + ' Copied')
     #         print except: continue
-    #
-    #
-    # copy()
