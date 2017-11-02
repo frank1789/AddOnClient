@@ -101,8 +101,8 @@ class Addonupdate:
         chunksize = 1024
         bars = int(total_size / chunksize)
         with open(savefile, "wb") as f:
-            for chunk in tqdm(r.iter_content(chunk_size=chunksize), total=bars, unit="kB",
-                              desc=savefile, leave=True, dynamic_ncols=True):
+            for chunk in tqdm(r.iter_content(chunk_size=chunksize), total=bars, unit="kB", ncols=80,
+                              desc=savefile, leave=True):
                 f.write(chunk)
                 downloaded += chunksize  # increment the downloaded
 
@@ -114,3 +114,6 @@ class Addonupdate:
 
     def getremoteversion(self):
         return float(self.remoteversion)
+
+    def __del__(self):
+        print('Complete!')
