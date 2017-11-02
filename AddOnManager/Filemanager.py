@@ -1,13 +1,12 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+import sys, time
 import os
 import re
 import zipfile
 import shutil
 from tqdm import tqdm
 from send2trash import send2trash
-from notifyme import notify
 
 
 class Filemanager:
@@ -64,19 +63,36 @@ class Filemanager:
                     pass
 
         # launch copy of file
-        notify(title='ElvUI Add-On Manager', subtitle='with python', message='Start copy of files...')
+        # notify(title='ElvUI Add-On Manager', subtitle='with python', message='Start copy of files...')
         with tqdm(range(len(self.__path)), desc='start') as pbar:
             for i in range(len(self.__path)):
-                pbar.set_description('copy file {:<35}'.format(self.__extractnameextfile(self.__path[i])))
-                # todo insert function of copy
+                # time.sleep(0.01)
+                self.destinationfile(self.__path[i])
                 pbar.update()
+                pbar.set_description('copy {}'.format(self.__extractnameextfile(self.__path[i])))
+                # print(self.__extractnameextfile(self.__path[i]), self.destinationfile(self.__path[i]),end='\n')
+                # copy function file to file
+                shutil.copyfile(self.__path[i], self.destinationfile(self.__path[i]))
                 pass
+
+                # print("Copy complete")
 
     def __extractnameextfile(self, filepath):
         searched = re.search(r"(.+\/)(?P<fieldnames>[^\/]+)$", filepath)
         file_name_ext = searched.group('fieldnames')
-        # print(searched.group('namewithext')) # enable for debug
+        # print(searched.group('fieldnames')) # enable for debug
         return file_name_ext
+
+    def destinationfile(self, sourcepathfile):
+
+        destination = re.sub(r'(\.\/\w+\/)', '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2/',
+                             sourcepathfile)
+        # print(sourcepathfile,  destination, sep=' ', end='\n') # enable for debug
+        return destination
+
+        # def __del__(self):
+        # self.__deletezipfile()
+        # self.__deletetempfolder()
 
 
 if __name__ == '__main__':
@@ -86,74 +102,3 @@ if __name__ == '__main__':
 
     test = Filemanager(outzip)
     test.upgrade()
-
-    # try:
-    #     shutil.copytree(src, dst)
-    #     # Directories are the same
-    # except shutil.Error as e:
-    #     print('Directory not copied. Error: %s' % e)
-    #     # Any error saying that the directory doesn't exist
-    # except OSError as e:
-    #     print('Directory not copied. Error: %s' % e)
-    # #finally:
-    #  #
-    #   #  print('Over')
-    #
-    # for item in os.listdir(src):
-    #     print(item)
-    #
-    #
-    # for item in os.listdir(src):
-    #     srcFile = os.path.join(src, item)
-    #     dstFile = os.path.join(dst, item)
-    #     print(srcFile)
-    #     shutil.copy2(srcFile, dstFile)
-
-
-
-
-    # process_content_with_progress3()
-
-    # test = Filemanager(outzip)
-    # test.maketempfolder()
-    # test.test(src, dst)
-
-
-    # shutil.copy2(pa[i], '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2/ElvUI/')
-    # print((len(path) - 1) * '---', os.path.basename(root))
-    # print(root)
-    # pa.append(root)
-
-
-
-
-
-
-    # for file in files:
-    # print(len(path) * '---', file)
-    #    print(file)
-    # a = os.listdir(src)
-    # print(os.walk('.'))
-    # print(os.listdir(src))
-    # print(type(a))
-
-    # bar = tqdm(files)
-    # print(bar)
-    # for file in root:
-    #    print(file)
-    #    shutil.copytree(file,'/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/2')
-    # print(pa)
-    # for i in pa:
-    #     os.listdir(i)
-    # bar = tqdm(dirs)
-    # for directory in bar:
-    # print(directory)
-    #    shutil.copyfile(directory, dst)
-    #
-    # def copy(source, destination, filetype):
-    #     source = source + '\\' + filetype
-    #     destination = destination + '\\' + filetype
-    #     bar = tqdm(os.listdir(source))
-    #     for directory in bar:
-    #         try: shutil.copytree(source + '\\' + directory, destination + '\\' + directory + ' Copied')
-    #         print except: continue
