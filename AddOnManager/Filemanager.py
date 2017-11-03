@@ -3,6 +3,7 @@
 
 
 import os
+import sys
 import re
 import shutil
 import zipfile
@@ -46,8 +47,7 @@ class Filemanager:
         """
         Args:
            :inputzipfile (str): content reference path to extract
-         """
-        # load the zip file in read mode
+         """  # load the zip file in read mode
         archive = zipfile.ZipFile(inputzipfile, 'r')
         # prints the content
         # print(archive.printdir())  # enable for debug
@@ -63,6 +63,8 @@ class Filemanager:
         #        send2trash(self.__tempname)
 
         archive.extractall(self.__PATH)
+        archive.close()
+
 
 
         # def __deletetempfolder(self):
@@ -156,4 +158,4 @@ if __name__ == '__main__':
     outzip = '/Users/francescoargentieri/PycharmProjects/ElvUIAddOnManager/elvui-10.68.zip'
 
     test = Filemanager()
-    test.maketempfolder(outzip)
+    test.upgrade()  # outzip)
