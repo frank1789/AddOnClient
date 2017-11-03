@@ -35,27 +35,30 @@ class Addonupdate:
     def __init__(self):
         super().__init__()
 
-    def checklocalversion(self, localpath):
+    def checklocalversion(self, p_path):
         """Checklocalverison retrive information from local 'file'.toc and save the value Interface's version and the value
         AddOn's version """
         print("Checking Add-On version")
 
         # open file and read information
-        with open(localpath + "ElvUI.toc", "r") as f:
+        with open(p_path, "r") as f:
             stream = f.read().split('\n')
             for line in stream:
                 if "Interface" in line:
-                    self.interfaceversion = self.version(line)
+                    self.interfaceversion = self.__version(line)
 
                 if "Version" in line:
-                    self.addonversion = self.version(line)
+                    self.addonversion = self.__version(line)
 
         print("Local ElvUI Add-On version: {!s}".format(self.addonversion))
 
-    @staticmethod
-    def version(line):
-        """getversion used to extract by regex information about number version fo any field"""
-
+    def __version(self, line):
+        """
+        getversion used to extract by regex information about number version from field of table of content (.toc)
+        Args:
+            line (str):  line extract content information
+        :returns:  int -- version find out.
+        """
         # set pattern to extract information
         versionsearched = re.search(r"(?P<version>\d+.\d+)", line)
         if versionsearched:
@@ -64,7 +67,9 @@ class Addonupdate:
 
     def checkremoteversion(self):
         """Checkremoteverison retrive information from remote site 'https://www.tukui.org/download.php?ui=elvui'
-        the actual version of the Add-On"""
+        the actual version of the Add-On
+        :returns:  int -- remote version the add-on.
+        """
 
         # store locally webpage Add-On
         url = 'https://www.tukui.org/download.php?ui=elvui'
@@ -81,11 +86,17 @@ class Addonupdate:
             sourcepage)
         if remotesearch:
             self.remoteversion = remotesearch.group('version')
-            print("Remote ElvUI Add-On version: {!s}".format(self.remoteversion))
-            return self.remoteversion
+            print("Remote version: {!s}".format(self.remoteversion))
+        else:
+            print("Remote version not aviable.")
+
+        return self.remoteversion
 
     def update(self):
-        """updade start the donwload of the file"""
+        """
+        check the remote version at link hard coded
+        :return: string -- path of the file zip
+        """
         # set original link
         originalurl = "https://www.tukui.org/downloads/elvui-0.0.zip"
         downloadurl = re.sub("(?P<version>\d+.\d+)", self.remoteversion, originalurl)
