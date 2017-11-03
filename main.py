@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os
 from AddOnManager import Maketitle
 from AddOnManager import Addonupdate as Addondownloader
 from AddOnManager import Filemanager
