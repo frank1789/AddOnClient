@@ -1,7 +1,7 @@
 [![](https://img.shields.io/badge/license-GPL%20v3-orange.svg)](LICENSE)
 
 # AddOn Client
-Simple script python to update ElvUI add-on work only in macos with default's World of Warcraft path
+Simple script python to update ElvUI add-on work only in macos with default's World of Warcraft path.
 
 ## How it works
 Download the files. Launch the script from terminal
