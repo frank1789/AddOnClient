@@ -10,6 +10,8 @@ import urllib.request
 import requests
 from tqdm import tqdm
 
+from .colour import PrintColour
+
 
 class Addonupdate:
     """Addonupdate class manage the information about AddOn version:
@@ -32,12 +34,13 @@ class Addonupdate:
     # remote Add-On version
     remoteversion = 0
 
+
     def __init__(self):
         super().__init__()
 
     def checklocalversion(self, p_path):
-        """Checklocalverison retrive information from local 'file'.toc and save the value Interface's version and the value
-        AddOn's version """
+        """Checklocalverison retrive information from local 'file'.toc and save the value Interface's version and the
+        value AddOn's version """
         print("Checking Add-On version")
 
         # open file and read information
@@ -50,7 +53,8 @@ class Addonupdate:
                 if "Version" in line:
                     self.addonversion = self.__version(line)
 
-        print("Local ElvUI Add-On version: {!s}".format(self.addonversion))
+        result = PrintColour(self.addonversion).setcolour('blue')
+        print("Local ElvUI Add-On version: {!s}".format(result))
 
     def __version(self, line):
         """
@@ -86,9 +90,9 @@ class Addonupdate:
             sourcepage)
         if remotesearch:
             self.remoteversion = remotesearch.group('version')
-            print("Remote version: {!s}".format(self.remoteversion))
+            print("Remote version: {!s}".format(PrintColour(self.remoteversion).setcolour('green')))
         else:
-            print("Remote version not aviable.")
+            print(PrintColour("Remote version not avaiable.").setcolour('red'))
 
         return self.remoteversion
 
@@ -117,7 +121,7 @@ class Addonupdate:
                 f.write(chunk)
                 downloaded += chunksize  # increment the downloaded
 
-        print("Download complete")
+        PrintColour("Download complete").setcolour('green')
         return savefile
 
     def getlocalversion(self):
@@ -126,5 +130,3 @@ class Addonupdate:
     def getremoteversion(self):
         return float(self.remoteversion)
 
-    def __del__(self):
-        print('Complete!')
