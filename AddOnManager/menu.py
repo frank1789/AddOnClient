@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from .Addonupdate import Addonupdate as Addondownloader
+from .Filemanager import Filemanager
+from .colour import PrintColour
 
 
 class MakeTitle:
@@ -37,7 +40,19 @@ class MakeTitle:
         print("You typed zero.\n")
 
     def update(self):
-        print("n is a perfect square\n")
+        # set local path
+        addonfile = Filemanager()
+        # check local version
+        addonversion = Addondownloader()
+        addonversion.checklocalversion(addonfile.getlocalfolder())
+        # check remote version
+        addonversion.checkremoteversion()
+        if addonversion.getremoteversion() > addonversion.getlocalversion():
+            print("Starting update...")
+            addonfile.upgrade(addonversion.update())
+
+        else:
+            print(PrintColour("No new version").setfontstyle('blink'))
 
     def remove(self):
         print("n is an even number\n")
