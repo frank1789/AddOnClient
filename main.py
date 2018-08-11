@@ -1,8 +1,17 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""AddOnManager
+simple script to manage ElvUI from tukui.org
+
+Author: Francesco Argentieri
+Website: https://github.com/frank1789
+Last edited: August 2018
+"""
+
 import sys
-from AddOnManager import MakeTitle
+from PyQt5.QtWidgets import QApplication
+from AddOnManager import MakeTitle, Example
 from AddOnManager import Addonupdate as Addondownloader
 from AddOnManager import Filemanager
 from AddOnManager import PrintColour
@@ -12,30 +21,31 @@ if __name__ == '__main__':
     arguments = sys.argv[1:]
     count = len(arguments)
     print(arguments)
-    if len(arguments) != 0 and arguments[0] == "-a":
-        # set local path
-        addonfile = Filemanager()
+    if len(arguments) != 0:
+        if arguments[0] == "-a" or arguments[0] == "-auto":
+            # set local path
+            addonfile = Filemanager()
+            # check local version
+            addonversion = Addondownloader()
+            addonversion.checklocalversion(addonfile.getlocalfolder())
+            # check remote version
+            addonversion.checkremoteversion()
+            if addonversion.getremoteversion() > addonversion.getlocalversion():
+                print("Starting update...")
+                addonfile.upgrade(addonversion.update())
 
-        # check the version
-        addonversion = Addondownloader()
-        addonversion.checklocalversion(addonfile.getlocalfolder())
+            else:
+                print(PrintColour("No new version").setfontstyle('blink'))
 
-        # check the remote version
-        addonversion.checkremoteversion()
-        if addonversion.getremoteversion() > addonversion.getlocalversion():
-            print("Starting update...")
-            addonfile.upgrade(addonversion.update())
-
-        else:
-            print(PrintColour("No new version").setfontstyle('blink'))
-
-
-
+        elif arguments[0] == "-g" or arguments[0] == "--gui":
+            app = QApplication(sys.argv)
+            ex = Example()
+            sys.exit(app.exec_())
 
     else:
         MakeTitle()
 
-
-    #addonfile.cleanup('/Users/francesco/PycharmProjects/AddOnClient/elvui-10.78.zip')
+    # 4
+    # addonfile.cleanup('/Users/francesco/PycharmProjects/AddOnClient/elvui-10.78.zip')
 
     sys.exit()
