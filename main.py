@@ -47,5 +47,3 @@ if __name__ == '__main__':
 
     # 4
     # addonfile.cleanup('/Users/francesco/PycharmProjects/AddOnClient/elvui-10.78.zip')
-
-    sys.exit()

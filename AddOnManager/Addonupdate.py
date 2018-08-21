@@ -6,10 +6,8 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-
 import requests
 from tqdm import tqdm
-
 from .colour import PrintColour
 
 
@@ -33,7 +31,6 @@ class Addonupdate:
 
     # remote Add-On version
     remoteversion = 0
-
 
     def __init__(self):
         super().__init__()
