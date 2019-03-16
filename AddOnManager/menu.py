@@ -71,9 +71,12 @@ class MakeTitle:
 
                 elif int(checked_select) == 2:
                     self.update()
+                    checked_select = 4
+                    return checked_select
 
                 elif int(checked_select) == 3:
-                    self.remove()
+                    checked_select = 4
+                    return checked_select
 
                 elif int(checked_select) == 4:
                     sys.exit()

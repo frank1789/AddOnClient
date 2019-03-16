@@ -10,7 +10,7 @@ from send2trash import send2trash
 
 class Filemanager:
     # folder where store the add-on of WOW, as
-    __PATH = '/Applications/World of Warcraft/Interface/AddOns'  # changeless
+    __PATH = '/Applications/World of Warcraft/'  # changeless
 
     def __init__(self):
         self.setlocalfolder()
